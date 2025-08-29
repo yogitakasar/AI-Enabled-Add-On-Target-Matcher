@@ -1,0 +1,162 @@
+<mat-sidenav-container class="dashboard-container">
+  <!-- Left Sidebar -->
+  <mat-sidenav mode="side" opened class="sidebar">
+    <div class="sidebar-content">
+      <!-- Logo -->
+      <div class="logo">
+        <span class="logo-icon">*</span>
+        <span class="logo-text">logo</span>
+      </div>
+      
+      <!-- Navigation Menu -->
+      <mat-nav-list class="nav-menu">
+        <a mat-list-item class="nav-item active">
+          <mat-icon>work_outline</mat-icon>
+          <span>Overview</span>
+        </a>
+        <a mat-list-item class="nav-item">
+          <mat-icon>flash_on</mat-icon>
+          <span>Deals</span>
+        </a>
+        <a mat-list-item class="nav-item">
+          <mat-icon>science</mat-icon>
+          <span>Pipeline</span>
+        </a>
+        <a mat-list-item class="nav-item">
+          <mat-icon>settings_outline</mat-icon>
+          <span>Settings</span>
+        </a>
+        <a mat-list-item class="nav-item">
+          <mat-icon>help_outline</mat-icon>
+          <span>Help & Support</span>
+        </a>
+      </mat-nav-list>
+      
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" class="action-btn">
+          <mat-icon>notifications_outline</mat-icon>
+          Notifications
+        </button>
+        <button mat-raised-button color="primary" class="action-btn">
+          <mat-icon>chat_outline</mat-icon>
+          Messages
+        </button>
+      </div>
+      
+      <!-- Footer -->
+      <div class="sidebar-footer">
+        <p class="version">Version 1.0.0</p>
+        <p class="copyright">© 2024 AcquisitionFlow. All rights reserved.</p>
+      </div>
+    </div>
+  </mat-sidenav>
+  
+  <!-- Main Content -->
+  <mat-sidenav-content class="main-content">
+    <!-- Top Header -->
+    <mat-toolbar class="header">
+      <div class="header-left">
+        <a class="nav-link active">Dashboard</a>
+        <a class="nav-link">Reports</a>
+        <a class="nav-link">Teams</a>
+        <a class="nav-link">Analytics</a>
+      </div>
+      
+      <div class="header-center">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput placeholder="Search insights, companies...">
+        </mat-form-field>
+      </div>
+      
+      <div class="header-right">
+        <a class="utility-link">
+          <mat-icon>support_agent</mat-icon>
+          Support
+        </a>
+        <a class="utility-link">
+          <mat-icon>feedback_outline</mat-icon>
+          Feedback
+        </a>
+        <div class="user-profile" (click)="logout()">
+          <mat-icon class="profile-icon">account_circle</mat-icon>
+        </div>
+      </div>
+    </mat-toolbar>
+    
+    <!-- Dashboard Content -->
+    <div class="dashboard-content">
+      <h1 class="page-title">Strategic Growth Dashboard</h1>
+      <h2 class="section-title">Add-on Target Analysis</h2>
+      
+      <div class="analysis-container">
+        <!-- Left Panel - Portfolio Companies -->
+        <div class="portfolio-panel">
+          <h3 class="panel-title">PORTFOLIO COMPANIES</h3>
+          
+          <!-- Loading State -->
+          <div class="loading-state" *ngIf="loading">
+            <mat-icon class="loading-icon">refresh</mat-icon>
+            <p>Loading portfolio companies...</p>
+          </div>
+          
+          <!-- Error State -->
+          <div class="error-state" *ngIf="error && !loading">
+            <mat-icon class="error-icon">error_outline</mat-icon>
+            <p>{{ error }}</p>
+            <button mat-raised-button color="primary" (click)="loadPortfolioCompanies()">
+              <mat-icon>refresh</mat-icon>
+              Retry
+            </button>
+          </div>
+          
+          <!-- Company List -->
+          <div class="company-list" *ngIf="!loading && !error">
+            <div class="company-item" *ngFor="let company of portfolioCompanies" (click)="onCompanyClick(company)">
+              <mat-icon class="company-icon">{{ company.icon }}</mat-icon>
+              <div class="company-info">
+                <span class="company-name">{{ company.name }}</span>
+                <span class="company-industry">{{ company.industry }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Panel - Drag & Drop Area -->
+        <div class="drop-zone">
+          <div class="drop-content">
+            <div class="drop-icon">
+              <mat-icon class="drag-icon">drag_indicator</mat-icon>
+              <mat-icon class="file-icon">description_outline</mat-icon>
+            </div>
+            <h3 class="drop-title">Drop Portfolio Company Here</h3>
+            <p class="drop-instruction">Drag a company from the left panel to analyze potential acquisition targets.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Footer -->
+    <div class="page-footer">
+      <div class="footer-links">
+        <a href="#" class="footer-link">Resources</a>
+        <a href="#" class="footer-link">Legal</a>
+      </div>
+      <div class="social-icons">
+        <a href="#" class="social-icon">
+          <mat-icon>facebook</mat-icon>
+        </a>
+        <a href="#" class="social-icon">
+          <mat-icon>twitter</mat-icon>
+        </a>
+        <a href="#" class="social-icon">
+          <mat-icon>business</mat-icon>
+        </a>
+        <a href="#" class="social-icon">
+          <mat-icon>code</mat-icon>
+        </a>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

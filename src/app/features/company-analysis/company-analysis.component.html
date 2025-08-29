@@ -1,0 +1,159 @@
+<mat-sidenav-container class="company-analysis-container">
+  <!-- Left Sidebar -->
+  <mat-sidenav mode="side" opened class="sidebar">
+    <div class="sidebar-content">
+      <!-- Logo -->
+      <div class="logo">
+        <span class="logo-icon">*</span>
+        <span class="logo-text">logo</span>
+      </div>
+      
+      <!-- Portfolio Companies List -->
+      <div class="portfolio-companies">
+        <h3 class="sidebar-title">Portfolio Companies</h3>
+        <div class="company-list">
+          <div 
+            class="company-item" 
+            *ngFor="let company of portfolioCompanies" 
+            [class.selected]="company.isSelected"
+            (click)="onCompanySelect(company)"
+          >
+            <div class="company-info">
+              <span class="company-name">{{ company.name }}</span>
+            </div>
+            <button mat-icon-button class="more-options">
+                <mat-icon class="arrow-icon">chevron_right</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav>
+  
+  <!-- Main Content -->
+  <mat-sidenav-content class="main-content">
+    <!-- Top Header -->
+    <mat-toolbar class="header">
+      <div class="header-left">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput placeholder="Search add-ons or attributes">
+        </mat-form-field>
+      </div>
+      
+      <div class="header-right">
+        <button mat-icon-button class="header-icon" title="Search">
+          <mat-icon>search</mat-icon>
+        </button>
+        <button mat-icon-button class="header-icon" title="Notifications">
+          <mat-icon>notifications</mat-icon>
+        </button>
+        <button mat-icon-button class="header-icon" title="Profile">
+          <mat-icon>account_circle</mat-icon>
+        </button>
+        <button mat-icon-button class="header-icon back-btn" (click)="goBack()" title="Go Back">
+          <mat-icon>arrow_back</mat-icon>
+        </button>
+      </div>
+    </mat-toolbar>
+    
+         <!-- Company Analysis Content -->
+     <div class="analysis-content">
+       <!-- Debug Section (remove after fixing) -->
+       <!-- <div class="debug-section" style="background: #f0f0f0; padding: 10px; margin-bottom: 20px; border-radius: 8px; font-family: monospace; font-size: 12px;">
+         <strong>Debug Info:</strong><br>
+         selectedCompany: {{ selectedCompany | json }}<br>
+         targetCompanyName: {{ targetCompanyName }}<br>
+         buyerCompanyName: {{ buyerCompanyName }}<br>
+         selectedCompany?.name: {{ selectedCompany?.name }}<br>
+         selectedCompany?.companyName: {{ selectedCompany?.companyName }}
+       </div>
+        -->
+       <div class="analysis-container">
+        <!-- Left Panel - Company Details -->
+        <div class="company-details-panel">
+          <div class="company-header">
+                         <div class="company-title-section">
+               <h1 class="company-title">{{ selectedCompany?.name || selectedCompany?.companyName || 'Company Name Not Available' }}</h1>
+               <div class="company-relationship">
+                 <!-- <span class="relationship-label">Acquisition Analysis:</span> -->
+                 <span class="buyer-company">{{ buyerCompanyName || 'Portfolio Company' }}</span>
+                 <!-- <span class="relationship-arrow">→</span> -->
+                 <!-- <span class="target-company">{{ targetCompanyName || 'Target Company' }}</span> -->
+               </div>
+             </div>
+            <div class="synergy-score-badge">
+              Synergy Score: {{ selectedCompany?.synergyScore }}
+            </div>
+          </div>
+          
+          <div class="company-description">
+            <p>{{ selectedCompany?.description }}</p>
+            <!-- <button mat-icon-button class="more-options-btn">
+              <mat-icon>more_vert</mat-icon>
+            </button> -->
+          </div>
+          
+          <div class="qualitative-attributes">
+            <h3 class="section-title">Qualitative Attributes</h3>
+            
+            <div class="attribute-section">
+              <h4 class="attribute-label">Key Products/Services</h4>
+              <ul class="attribute-list">
+                <li *ngFor="let product of selectedCompany?.keyProducts">{{ product }}</li>
+              </ul>
+            </div>
+            
+            <div class="attribute-section">
+              <h4 class="attribute-label">Private Equity Sponsor</h4>
+              <p class="attribute-value">{{ selectedCompany?.sponsor }}</p>
+            </div>
+            
+            <div class="attribute-section">
+              <h4 class="attribute-label">Portfolio Duration</h4>
+              <p class="attribute-value">{{ selectedCompany?.portfolioDuration }}</p>
+            </div>
+            
+            <div class="attribute-section">
+              <h4 class="attribute-label">Add-on History</h4>
+              <ul class="attribute-list">
+                <li *ngFor="let event of selectedCompany?.addonHistory">{{ event }}</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Panel - Synergy Types -->
+        <div class="synergy-types-panel">
+          <div class="synergy-grid">
+            <div class="synergy-card" *ngFor="let synergy of synergyTypes">
+              <div class="synergy-header">
+                <div class="synergy-icon">
+                  <mat-icon>{{ synergy.icon }}</mat-icon>
+                </div>
+                <div class="synergy-metrics">
+                  <span class="impact-badge" [class]="'impact-' + synergy.impact?.toLowerCase()">
+                    {{ synergy.impact }}
+                  </span>
+                  <span class="timeline-badge">{{ synergy.timeline }}</span>
+                </div>
+              </div>
+              <h3 class="synergy-title">{{ synergy.title }}</h3>
+              <p class="synergy-description">{{ synergy.description }}</p>
+              <div class="synergy-value">
+                <span class="value-label">Value:</span>
+                <span class="value-amount">{{ synergy.value }}</span>
+              </div>
+              <div class="synergy-examples">
+                <h4 class="examples-title">Details:</h4>
+                <ul class="examples-list">
+                  <li *ngFor="let example of synergy.examples">{{ example }}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

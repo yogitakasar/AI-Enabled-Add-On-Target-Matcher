@@ -1,0 +1,182 @@
+<mat-sidenav-container class="synergy-container">
+  <!-- Left Sidebar -->
+  <mat-sidenav mode="side" opened class="sidebar">
+    <div class="sidebar-content">
+      <!-- Logo -->
+      <div class="logo">
+        <span class="logo-icon">*</span>
+        <span class="logo-text">logo</span>
+      </div>
+      
+      <!-- Navigation Menu -->
+      <mat-nav-list class="nav-menu">
+        <a mat-list-item class="nav-item" routerLink="/dashboard">
+          <mat-icon>work_outline</mat-icon>
+          <span>Overview</span>
+        </a>
+        <a mat-list-item class="nav-item">
+          <mat-icon>flash_on</mat-icon>
+          <span>Deals</span>
+        </a>
+        <a mat-list-item class="nav-item">
+          <mat-icon>science</mat-icon>
+          <span>Pipeline</span>
+        </a>
+        <a mat-list-item class="nav-item">
+          <mat-icon>settings_outline</mat-icon>
+          <span>Settings</span>
+        </a>
+        <a mat-list-item class="nav-item">
+          <mat-icon>help_outline</mat-icon>
+          <span>Help & Support</span>
+        </a>
+      </mat-nav-list>
+      
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button mat-raised-button color="primary" class="action-btn">
+          <mat-icon>notifications_outline</mat-icon>
+          Notifications
+        </button>
+        <button mat-raised-button color="primary" class="action-btn">
+          <mat-icon>chat_outline</mat-icon>
+          Messages
+        </button>
+      </div>
+      
+      <!-- Footer -->
+      <div class="sidebar-footer">
+        <p class="version">Version 1.0.0</p>
+        <p class="copyright">© 2024 AcquisitionFlow. All rights reserved.</p>
+      </div>
+    </div>
+  </mat-sidenav>
+  
+  <!-- Main Content -->
+  <mat-sidenav-content class="main-content">
+    <!-- Top Header -->
+    <mat-toolbar class="header">
+      <div class="header-left">
+        <a class="nav-link" routerLink="/dashboard">Dashboard</a>
+        <a class="nav-link">Reports</a>
+        <a class="nav-link">Teams</a>
+        <a class="nav-link">Analytics</a>
+      </div>
+      
+      <div class="header-center">
+        <mat-form-field appearance="outline" class="search-field">
+          <mat-icon matPrefix>search</mat-icon>
+          <input matInput placeholder="Search insights, companies...">
+        </mat-form-field>
+      </div>
+      
+      <div class="header-right">
+        <a class="utility-link">
+          <mat-icon>support_agent</mat-icon>
+          Support
+        </a>
+        <a class="utility-link">
+          <mat-icon>feedback_outline</mat-icon>
+          Feedback
+        </a>
+        <div class="user-profile" (click)="logout()">
+          <mat-icon class="profile-icon">account_circle</mat-icon>
+        </div>
+      </div>
+    </mat-toolbar>
+    
+    <!-- Synergy Analysis Content -->
+    <div class="synergy-content">
+      <h1 class="page-title">Synergy Analysis</h1>
+      
+      <div class="analysis-container">
+        <!-- Left Panel - Selected Portfolio Company -->
+        <div class="company-panel">
+          <h3 class="panel-title">Selected Portfolio Company</h3>
+          <div class="company-card" *ngIf="selectedCompany">
+            <div class="company-header">
+              <div class="company-logo">{{ selectedCompany.logo }}</div>
+              <div class="company-info">
+                <h4 class="company-name">{{ selectedCompany.name }}</h4>
+                <p class="company-industry">{{ selectedCompany.industry }}</p>
+              </div>
+            </div>
+            
+            <div class="company-description">
+              <p>{{ selectedCompany.description }}</p>
+            </div>
+            
+            <div class="company-metrics">
+              <div class="metric-item">
+                <span class="metric-label">Industry:</span>
+                <span class="metric-value">{{ selectedCompany.industry }}</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Revenue (LTM):</span>
+                <span class="metric-value">{{ selectedCompany.revenue }}</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">EBITDA:</span>
+                <span class="metric-value">{{ selectedCompany.ebitda }}</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Employees:</span>
+                <span class="metric-value">{{ selectedCompany.employees }}</span>
+              </div>
+              <div class="metric-item">
+                <span class="metric-label">Headquarters:</span>
+                <span class="metric-value">{{ selectedCompany.headquarters }}</span>
+              </div>
+            </div>
+            
+            <div class="company-actions">
+              <button mat-stroked-button class="edit-btn">Edit Profile</button>
+              <button mat-raised-button color="primary" class="report-btn">View Full Report</button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Right Panel - Potential Acquisitions -->
+        <div class="acquisitions-panel">
+          <h3 class="panel-title">Potential Acquisitions (Add-ons)</h3>
+          <div class="acquisitions-list">
+            <div class="acquisition-item" *ngFor="let acquisition of potentialAcquisitions" (click)="onAcquisitionClick(acquisition)">
+              <div class="acquisition-content">
+                <h4 class="acquisition-name">{{ acquisition.name }}</h4>
+                <p class="acquisition-description">{{ acquisition.description }}</p>
+              </div>
+              <div class="acquisition-score">
+                <span class="score-badge">{{ acquisition.score }}</span>
+              </div>
+              <button mat-icon-button class="expand-btn">
+                <mat-icon>expand_more</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <div class="page-footer">
+        <div class="footer-links">
+          <a href="#" class="footer-link">Resources</a>
+          <a href="#" class="footer-link">Legal</a>
+        </div>
+        <div class="social-icons">
+          <a href="#" class="social-icon">
+            <mat-icon>facebook</mat-icon>
+          </a>
+          <a href="#" class="social-icon">
+            <mat-icon>twitter</mat-icon>
+          </a>
+          <a href="#" class="social-icon">
+            <mat-icon>business</mat-icon>
+          </a>
+          <a href="#" class="social-icon">
+            <mat-icon>code</mat-icon>
+          </a>
+        </div>
+      </div>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>

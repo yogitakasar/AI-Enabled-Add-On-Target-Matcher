@@ -1,0 +1,180 @@
+{
+  "info": {
+    "name": "Portfolio Management System API",
+    "description": "API collection for the Portfolio Management System",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "https://vantagesourcing.politegrass-fa8c30a6.eastus.azurecontainerapps.io",
+      "type": "string"
+    },
+    {
+      "key": "accessToken",
+      "value": "your_access_token_here",
+      "type": "string"
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "item": [
+    {
+      "name": "Portfolio Companies",
+      "item": [
+        {
+          "name": "Get All Portfolio Companies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/portfolio/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "dashboard", "portfolio", "all"]
+            },
+            "description": "Retrieves a list of all portfolio companies"
+          }
+        },
+        {
+          "name": "Get Portfolio Company with Targets",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/portfolio?companyId=1&companyName=Abc",
+              "host": ["{{baseUrl}}"],
+              "path": ["portfolio"],
+              "query": [
+                {
+                  "key": "companyId",
+                  "value": "1",
+                  "description": "Portfolio company ID"
+                },
+                {
+                  "key": "companyName",
+                  "value": "Abc",
+                  "description": "Portfolio company name (URL encoded)"
+                }
+              ]
+            },
+            "description": "Retrieves portfolio company details along with potential acquisition targets"
+          }
+        },
+        {
+          "name": "Get Target Company Synergies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/portfolio/target?buyerCompanyId=1&targetCompanyId=T1",
+              "host": ["{{baseUrl}}"],
+              "path": ["portfolio", "target"],
+              "query": [
+                {
+                  "key": "buyerCompanyId",
+                  "value": "1",
+                  "description": "Portfolio company ID (buyer)"
+                },
+                {
+                  "key": "targetCompanyId",
+                  "value": "T1",
+                  "description": "Target company ID (format: T1, T2, etc.)"
+                }
+              ]
+            },
+            "description": "Retrieves detailed synergy information for a specific acquisition target"
+          }
+        },
+        {
+          "name": "Search Portfolio Companies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/portfolio/search?q=analytics",
+              "host": ["{{baseUrl}}"],
+              "path": ["portfolio", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "analytics",
+                  "description": "Search query"
+                }
+              ]
+            },
+            "description": "Searches portfolio companies by name or industry"
+          }
+        },
+        {
+          "name": "Get Companies by Industry",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/portfolio/industry/Enterprise%20Software",
+              "host": ["{{baseUrl}}"],
+              "path": ["portfolio", "industry", "Enterprise Software"]
+            },
+            "description": "Retrieves portfolio companies filtered by industry"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Scenarios",
+      "item": [
+        {
+          "name": "Complete User Journey Test",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/dashboard/portfolio/all",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "dashboard", "portfolio", "all"]
+            },
+            "description": "Test the complete user journey: 1) Load dashboard, 2) Select company, 3) View synergies"
+          }
+        }
+      ]
+    }
+  ]
+}

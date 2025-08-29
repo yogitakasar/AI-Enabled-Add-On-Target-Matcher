@@ -1,0 +1,59 @@
+<div class="login-container">
+  <div class="login-card">
+    <div class="logo-section">
+      <div class="logo">
+        <span class="logo-icon">*</span>
+        <span class="logo-text">logo</span>
+      </div>
+    </div>
+    
+    <mat-card class="auth-card">
+      <mat-card-header>
+        <mat-card-title>Welcome Back</mat-card-title>
+        <mat-card-subtitle>Sign in to your account</mat-card-subtitle>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email" placeholder="Enter your email">
+            <mat-icon matSuffix>email</mat-icon>
+            <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+              Email is required
+            </mat-error>
+            <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+              Please enter a valid email
+            </mat-error>
+          </mat-form-field>
+          
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="token" placeholder="Enter your Password">
+            <mat-icon matSuffix>lock</mat-icon>
+            <mat-error *ngIf="loginForm.get('token')?.hasError('required')">
+              Password is required
+            </mat-error>
+          </mat-form-field>
+          
+          <button 
+            mat-raised-button 
+            color="primary" 
+            type="submit" 
+            class="full-width login-button"
+            [disabled]="!loginForm.valid || isLoading">
+            <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+            <span *ngIf="!isLoading">Sign In</span>
+          </button>
+        </form>
+      </mat-card-content>
+      
+      <mat-card-actions class="auth-actions">
+        <p class="register-text">
+          Don't have an account? 
+          <a (click)="goToRegister()" class="register-link">Sign up</a>
+        </p>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>
