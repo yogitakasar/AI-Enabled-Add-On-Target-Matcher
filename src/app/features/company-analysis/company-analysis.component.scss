@@ -4,18 +4,17 @@
   display: flex;
 }
 
-// Sidebar Styles
 .sidebar {
   width: 280px;
   background-color: var(--sidebar-bg);
   border-right: 1px solid var(--border-color);
-}
-
-.sidebar-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 20px;
+  
+  &-content {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+  }
 }
 
 .logo {
@@ -26,11 +25,11 @@
   font-size: 24px;
   font-weight: bold;
   margin-bottom: 40px;
-}
-
-.logo-icon {
-  font-size: 28px;
-  color: var(--primary-color);
+  
+  &-icon {
+    font-size: 28px;
+    color: var(--primary-color);
+  }
 }
 
 .portfolio-companies {
@@ -106,7 +105,6 @@
   }
 }
 
-// Main Content Styles
 .main-content {
   flex: 1;
   display: flex;
@@ -114,7 +112,6 @@
   background-color: var(--white);
 }
 
-// Header Styles
 .header {
   height: 64px;
   background-color: var(--white);
@@ -124,73 +121,71 @@
   justify-content: space-between;
   padding: 0 24px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-}
-
-.header-left {
-  flex: 1;
-  max-width: 400px;
   
-  .search-field {
-    width: 100%;
+  &-left {
+    flex: 1;
+    max-width: 400px;
     
-    ::ng-deep .mat-mdc-form-field-flex {
-      background-color: var(--sidebar-bg);
-      border-radius: 8px;
-      padding: 0 12px;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-outline {
-      display: none;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-infix {
-      padding: 12px 0;
-      min-height: auto;
-    }
-    
-    ::ng-deep .mat-mdc-text-field-wrapper {
-      padding: 0;
-    }
-    
-    ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-      display: none;
+    .search-field {
+      width: 100%;
+      
+      ::ng-deep {
+        .mat-mdc-form-field-flex {
+          background-color: var(--sidebar-bg);
+          border-radius: 8px;
+          padding: 0 12px;
+        }
+        
+        .mat-mdc-form-field-outline,
+        .mat-mdc-form-field-subscript-wrapper {
+          display: none;
+        }
+        
+        .mat-mdc-form-field-infix {
+          padding: 12px 0;
+          min-height: auto;
+        }
+        
+        .mat-mdc-text-field-wrapper {
+          padding: 0;
+        }
+      }
     }
   }
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
   
-  .header-icon {
-    color: var(--text-secondary);
-    width: 40px;
-    height: 40px;
+  &-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
     
-    mat-icon {
-      font-size: 20px;
-      width: 20px;
-      height: 20px;
-    }
-    
-    &:hover {
-      color: var(--primary-color);
-    }
-    
-    &.back-btn {
-      background-color: var(--sidebar-bg);
-      border-radius: 8px;
+    .header-icon {
+      color: var(--text-secondary);
+      width: 40px;
+      height: 40px;
+      
+      mat-icon {
+        font-size: 20px;
+        width: 20px;
+        height: 20px;
+      }
       
       &:hover {
-        background-color: var(--primary-color);
-        color: white;
+        color: var(--primary-color);
+      }
+      
+      &.back-btn {
+        background-color: var(--sidebar-bg);
+        border-radius: 8px;
+        
+        &:hover {
+          background-color: var(--primary-color);
+          color: white;
+        }
       }
     }
   }
 }
 
-// Analysis Content Styles
 .analysis-content {
   flex: 1;
   padding: 32px;
@@ -204,7 +199,6 @@
   height: 100%;
 }
 
-// Company Details Panel
 .company-details-panel {
   background-color: var(--white);
   border: 1px solid var(--border-color);
@@ -239,13 +233,17 @@
           color: var(--text-primary);
         }
         
-        .buyer-company {
-          background: var(--primary-color);
-          color: white;
+        .buyer-company,
+        .target-company {
           padding: 4px 12px;
           border-radius: 16px;
           font-weight: 500;
           font-size: 12px;
+          color: white;
+        }
+        
+        .buyer-company {
+          background: var(--primary-color);
         }
         
         .relationship-arrow {
@@ -256,11 +254,6 @@
         
         .target-company {
           background: var(--accent-color);
-          color: white;
-          padding: 4px 12px;
-          border-radius: 16px;
-          font-weight: 500;
-          font-size: 12px;
         }
       }
     }
@@ -353,7 +346,6 @@
   }
 }
 
-// Synergy Types Panel
 .synergy-types-panel {
   .synergy-grid {
     display: grid;
@@ -512,7 +504,6 @@
   }
 }
 
-// Responsive Design
 @media (max-width: 1200px) {
   .analysis-container {
     grid-template-columns: 1fr;

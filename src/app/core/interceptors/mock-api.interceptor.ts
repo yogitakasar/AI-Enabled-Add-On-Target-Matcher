@@ -1,4 +1,4 @@
-import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent } from '@angular/common/http';
+import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpEvent, HttpResponse } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { delay } from 'rxjs/operators';
 
@@ -173,11 +173,14 @@ export const mockApiInterceptor: HttpInterceptorFn = (
       }
     ];
 
-    return of(new Response(JSON.stringify({
-      success: true,
-      data: mockPortfolioCompanies,
-      message: 'Portfolio companies retrieved successfully'
-    }))).pipe(delay(500));
+    return of(new HttpResponse({
+      status: 200,
+      body: {
+        success: true,
+        data: mockPortfolioCompanies,
+        message: 'Portfolio companies retrieved successfully'
+      }
+    })).pipe(delay(500));
   }
 
   // Mock /portfolio endpoint for portfolio company with acquisition targets
@@ -305,14 +308,17 @@ export const mockApiInterceptor: HttpInterceptorFn = (
       }
     ];
 
-    return of(new Response(JSON.stringify({
-      success: true,
-      data: {
-        portfolioCompany: mockPortfolioCompany,
-        acquisitionTargets: mockAcquisitionTargets
-      },
-      message: 'Portfolio company and acquisition targets retrieved successfully'
-    }))).pipe(delay(500));
+    return of(new HttpResponse({
+      status: 200,
+      body: {
+        success: true,
+        data: {
+          portfolioCompany: mockPortfolioCompany,
+          acquisitionTargets: mockAcquisitionTargets
+        },
+        message: 'Portfolio company and acquisition targets retrieved successfully'
+      }
+    })).pipe(delay(500));
   }
 
   // Mock /portfolio/target endpoint for target company synergies
@@ -585,15 +591,18 @@ export const mockApiInterceptor: HttpInterceptorFn = (
 
     const targetCompany = synergyData[targetCompanyId as keyof typeof synergyData] || synergyData['T1'];
 
-    return of(new Response(JSON.stringify({
-      success: true,
-      data: {
-        targetCompany: targetCompany,
-        buyerCompanyId: buyerCompanyId,
-        targetCompanyId: targetCompanyId
-      },
-      message: 'Target company synergy details retrieved successfully'
-    }))).pipe(delay(500));
+    return of(new HttpResponse({
+      status: 200,
+      body: {
+        success: true,
+        data: {
+          targetCompany: targetCompany,
+          buyerCompanyId: buyerCompanyId,
+          targetCompanyId: targetCompanyId
+        },
+        message: 'Target company synergy details retrieved successfully'
+      }
+    })).pipe(delay(500));
   }
 
   // If not a mock endpoint, continue with the real request

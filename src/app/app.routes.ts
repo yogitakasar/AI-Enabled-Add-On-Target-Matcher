@@ -19,12 +19,14 @@ export const routes: Routes = [
   { 
     path: 'synergy-analysis/:id', 
     loadComponent: () => import('./features/synergy-analysis/synergy-analysis.component').then(m => m.SynergyAnalysisComponent),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    data: { prerender: false }
   },
   { 
     path: 'company-analysis/:id', 
     loadComponent: () => import('./features/company-analysis/company-analysis.component').then(m => m.CompanyAnalysisComponent),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    data: { prerender: false }
   },
 
   { path: '**', redirectTo: '/dashboard' }
