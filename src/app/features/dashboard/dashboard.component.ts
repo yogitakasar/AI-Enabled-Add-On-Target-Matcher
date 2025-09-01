@@ -81,6 +81,7 @@ export class DashboardComponent implements OnInit {
         if (response.success) {
           // Navigate to synergy analysis with the data
           this.router.navigate(['/synergy-analysis', company.id], {
+            queryParams: { companyName: company.name },
             state: { 
               portfolioCompany: response.data.portfolioCompany,
               acquisitionTargets: response.data.acquisitionTargets

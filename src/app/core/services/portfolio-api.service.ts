@@ -89,7 +89,7 @@ export interface TargetCompanyResponse {
   providedIn: 'root'
 })
 export class PortfolioApiService {
-  private readonly baseUrl = '/portfolio';
+  private readonly baseUrl = 'https://vantagesourcing.politegrass-fa8c30a6.eastus.azurecontainerapps.io/portfolio';
 
   constructor(private http: HttpClient) {}
 
@@ -109,7 +109,7 @@ export class PortfolioApiService {
   ): Observable<ApiResponse<PortfolioCompanyResponse>> {
     const params = {
       companyId: companyId.toString(),
-      companyName: encodeURIComponent(companyName)
+      companyName: companyName
     };
     
     const queryString = new URLSearchParams(params).toString();
@@ -129,7 +129,7 @@ export class PortfolioApiService {
     };
     
     const queryString = new URLSearchParams(params).toString();
-    return this.http.get<ApiResponse<TargetCompanyResponse>>(`${this.baseUrl}?${queryString}`);
+    return this.http.get<ApiResponse<TargetCompanyResponse>>(`${this.baseUrl}/target?${queryString}`);
   }
 
   /**

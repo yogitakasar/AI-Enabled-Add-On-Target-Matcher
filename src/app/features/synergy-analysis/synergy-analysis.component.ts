@@ -11,7 +11,8 @@ import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { PortfolioApiService, AcquisitionTarget } from '../../core/services/portfolio-api.service';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { PortfolioApiService, AcquisitionTarget, PortfolioCompany } from '../../core/services/portfolio-api.service';
 
 
 @Component({
@@ -27,105 +28,19 @@ import { PortfolioApiService, AcquisitionTarget } from '../../core/services/port
     MatListModule,
     MatCardModule,
     MatInputModule,
-    MatFormFieldModule
+    MatFormFieldModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './synergy-analysis.component.html',
   styleUrls: ['./synergy-analysis.component.scss']
 })
 export class SynergyAnalysisComponent implements OnInit {
-  selectedCompany: any;
-  potentialAcquisitions: AcquisitionTarget[] = [
-    {
-      id: 1,
-      name: 'DataStream Analytics',
-      description: 'Specializes in real-time data analytics and visualization tools.',
-      score: 9,
-      industry: 'Data Analytics',
-      revenue: '$85M',
-      ebitda: '$28M',
-      employees: 320,
-      headquarters: 'Austin, TX',
-      synergyScore: 9.2,
-      keyProducts: [
-        'Real-time Analytics Platform',
-        'Machine Learning Models',
-        'Business Intelligence Tools',
-        'Data Visualization Suite'
-      ]
-    },
-    {
-      id: 2,
-      name: 'TaskFlow Automation',
-      description: 'Provides intelligent workflow automation solutions.',
-      score: 9,
-      industry: 'Business Process Automation',
-      revenue: '$65M',
-      ebitda: '$22M',
-      employees: 280,
-      headquarters: 'Denver, CO',
-      synergyScore: 8.8,
-      keyProducts: [
-        'Workflow Automation Engine',
-        'Process Mining Tools',
-        'RPA Platform',
-        'Business Process Analytics'
-      ]
-    },
-    {
-      id: 3,
-      name: 'CollaboraHub AI',
-      description: 'Develops AI-powered assistants for team collaboration.',
-      score: 8,
-      industry: 'Collaboration Software',
-      revenue: '$75M',
-      ebitda: '$25M',
-      employees: 350,
-      headquarters: 'Seattle, WA',
-      synergyScore: 8.5,
-      keyProducts: [
-        'AI Chat Assistant',
-        'Smart Document Collaboration',
-        'Team Analytics Dashboard',
-        'Workflow Intelligence'
-      ]
-    },
-    {
-      id: 4,
-      name: 'SecureVault Docs',
-      description: 'Offers encrypted document management and version control.',
-      score: 7,
-      industry: 'Document Management',
-      revenue: '$90M',
-      ebitda: '$30M',
-      employees: 400,
-      headquarters: 'Boston, MA',
-      synergyScore: 8.9,
-      keyProducts: [
-        'Secure Document Storage',
-        'Advanced Encryption',
-        'Compliance Management',
-        'Document Workflow'
-      ]
-    },
-    {
-      id: 5,
-      name: 'AgileSprint Integrations',
-      description: 'Focuses on building custom API integrations for Agile development tools.',
-      score: 7,
-      industry: 'Integration Services',
-      revenue: '$70M',
-      ebitda: '$24M',
-      employees: 320,
-      headquarters: 'San Diego, CA',
-      synergyScore: 8.7,
-      keyProducts: [
-        'API Gateway',
-        'Workflow Orchestration',
-        'Data Transformation',
-        'Integration Analytics'
-      ]
-    }
-  ];
+  selectedCompany: PortfolioCompany | null = null;
+  potentialAcquisitions: AcquisitionTarget[] = [];
+  loading = false;
+  error: string | null = null;
+  lastCompanyId: number = 1;
+  lastCompanyName: string = 'OptiCore Solutions';
 
   constructor(
     public authService: AuthService,
@@ -135,7 +50,7 @@ export class SynergyAnalysisComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Check if we have data from navigation state
+    // Use any navigation state for immediate display, but still fetch fresh data
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras.state) {
       const state = navigation.extras.state as any;
@@ -143,84 +58,46 @@ export class SynergyAnalysisComponent implements OnInit {
         console.log('Using data from navigation state:', state);
         this.selectedCompany = state.portfolioCompany;
         this.potentialAcquisitions = state.acquisitionTargets;
-        return;
       }
     }
-    
-    console.log('No navigation state data, using fallback method');
-    // Fallback to old method if no state data
-    this.route.params.subscribe(params => {
-      const companyId = params['id'];
-      // In a real app, you'd fetch company data from a service
-      this.selectedCompany = this.getCompanyData(companyId);
+
+    // Always fetch based on current route/query params and keep them updated
+    this.route.paramMap.subscribe(paramMap => {
+      const idStr = paramMap.get('id') || '1';
+      this.lastCompanyId = parseInt(idStr, 10);
+      const companyName = this.route.snapshot.queryParamMap.get('companyName') || this.selectedCompany?.name || 'OptiCore Solutions';
+      this.lastCompanyName = companyName;
+      console.log(`Fetching data for company ID: ${this.lastCompanyId}, Name: ${this.lastCompanyName}`);
+      this.loadCompanyData(this.lastCompanyId, this.lastCompanyName);
     });
   }
 
-  private getCompanyData(companyId: string): any {
-    const companies: { [key: string]: any } = {
-      '1': {
-        name: 'OptiCore Solutions',
-        industry: 'Enterprise Software',
-        description: 'OptiCore Solutions is a leading provider of cloud-based project management and collaboration software. Our platform offers comprehensive tools for task tracking, team communication, and project analytics, helping organizations streamline their workflows and improve productivity and efficiency.',
-        revenue: '$125M',
-        ebitda: '$38M',
-        employees: 450,
-        headquarters: 'San Francisco, CA',
-        logo: '🏢'
+  loadCompanyData(companyId: number, companyName: string): void {
+    this.loading = true;
+    this.error = null;
+
+    this.portfolioApiService.getPortfolioCompanyWithTargets(
+      companyId,
+      companyName
+    ).subscribe({
+      next: (response) => {
+        console.log('API response:', response);
+        this.loading = false;
+        
+        if (response.success && response.data) {
+          this.selectedCompany = response.data.portfolioCompany;
+          this.potentialAcquisitions = response.data.acquisitionTargets;
+        } else {
+          this.error = response.message || 'Failed to load company data';
+          console.error('API error:', response.message);
+        }
       },
-      '2': {
-        name: 'DataStream Analytics',
-        industry: 'Data Analytics',
-        description: 'DataStream Analytics specializes in real-time data processing and business intelligence solutions. We help organizations transform raw data into actionable insights through advanced analytics, machine learning, and interactive dashboards.',
-        revenue: '$85M',
-        ebitda: '$28M',
-        employees: 320,
-        headquarters: 'Austin, TX',
-        logo: '📊'
-      },
-      '3': {
-        name: 'TechForge Dynamics',
-        industry: 'Technology Services',
-        description: 'TechForge Dynamics is a full-service technology consulting firm that helps businesses modernize their IT infrastructure, implement cloud solutions, and develop custom software applications.',
-        revenue: '$95M',
-        ebitda: '$32M',
-        employees: 380,
-        headquarters: 'Seattle, WA',
-        logo: '⚡'
-      },
-      '4': {
-        name: 'Apex Analytics',
-        industry: 'Business Intelligence',
-        description: 'Apex Analytics provides enterprise-grade business intelligence and reporting solutions. Our platform enables data-driven decision making through advanced analytics, predictive modeling, and real-time reporting.',
-        revenue: '$110M',
-        ebitda: '$35M',
-        employees: 420,
-        headquarters: 'Boston, MA',
-        logo: '🌱'
-      },
-      '5': {
-        name: 'Quantum Ventures',
-        industry: 'Investment',
-        description: 'Quantum Ventures is a private equity firm focused on technology investments. We partner with innovative companies to accelerate growth and create long-term value through strategic guidance and capital.',
-        revenue: '$200M',
-        ebitda: '$65M',
-        employees: 150,
-        headquarters: 'New York, NY',
-        logo: '🌍'
-      },
-      '6': {
-        name: 'Pinnacle Holdings',
-        industry: 'Holding Company',
-        description: 'Pinnacle Holdings is a diversified holding company with investments across technology, healthcare, and financial services sectors. We provide strategic oversight and operational support to our portfolio companies.',
-        revenue: '$350M',
-        ebitda: '$120M',
-        employees: 280,
-        headquarters: 'Chicago, IL',
-        logo: '🔗'
+      error: (err) => {
+        console.error('Error fetching company data:', err);
+        this.loading = false;
+        this.error = 'Failed to load company data. Please try again.';
       }
-    };
-    
-    return companies[companyId] || companies['1'];
+    });
   }
 
   logout(): void {
@@ -238,7 +115,7 @@ export class SynergyAnalysisComponent implements OnInit {
     const portfolioCompanyId = this.route.snapshot.paramMap.get('id') || '1';
     
     // Create target company ID (T1, T2, etc.)
-    const targetCompanyId = `T${acquisition.id}`;
+    const targetCompanyId = `${acquisition.id}`;
     
     console.log(`Calling API: /portfolio?buyerCompanyId=${portfolioCompanyId}&targetCompanyId=${targetCompanyId}`);
     
