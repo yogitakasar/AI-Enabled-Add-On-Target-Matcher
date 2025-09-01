@@ -79,6 +79,7 @@ export interface PortfolioCompanyResponse {
   acquisitionTargets: AcquisitionTarget[];
 }
 
+
 export interface TargetCompanyResponse {
   targetCompany: TargetCompanySynergy;
   buyerCompanyId: string;
