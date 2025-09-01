@@ -89,7 +89,7 @@ export interface TargetCompanyResponse {
   providedIn: 'root'
 })
 export class PortfolioApiService {
-  private readonly baseUrl = 'https://vantagesourcing.politegrass-fa8c30a6.eastus.azurecontainerapps.io/portfolio';
+  private readonly baseUrl = 'https://vantagesourcing.purplebay-2788e3f9.eastus.azurecontainerapps.io/portfolio';
 
   constructor(private http: HttpClient) {}
 
