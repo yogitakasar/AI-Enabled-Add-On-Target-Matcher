@@ -155,7 +155,7 @@
               <p>{{ selectedCompany?.description || 'No description available.' }}</p>
             </div>
             
-            <div class="key-products" *ngIf="selectedCompany?.keyProducts && selectedCompany.keyProducts.length > 0">
+            <!-- <div class="key-products" *ngIf="selectedCompany?.keyProducts && selectedCompany.keyProducts.length > 0">
               <h4>Key Products</h4>
               <div class="product-list">
                 <div class="product-item" *ngFor="let product of selectedCompany.keyProducts">
@@ -163,7 +163,7 @@
                   <p>{{ product.description }}</p>
                 </div>
               </div>
-            </div>
+            </div> -->
           </div>
           
           <!-- Right Panel - Synergy Analysis -->
@@ -176,7 +176,7 @@
                   <mat-icon class="synergy-icon">{{ synergy.icon }}</mat-icon>
                   <div class="synergy-info">
                     <h4 class="synergy-title">{{ synergy.title }}</h4>
-                    <span class="synergy-impact impact-{{ synergy.impact.toLowerCase() }}">{{ synergy.impact }}</span>
+                    <span class="synergy-impact impact-{{ (synergy.impact || 'medium').toLowerCase() }}">{{ synergy.impact || 'Medium' }}</span>
                   </div>
                   <div class="synergy-value">{{ synergy.value }}</div>
                 </div>
