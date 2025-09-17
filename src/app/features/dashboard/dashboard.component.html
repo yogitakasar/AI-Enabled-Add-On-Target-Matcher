@@ -88,6 +88,19 @@
     <!-- Dashboard Content -->
     <div class="dashboard-content">
       <h1 class="page-title">Strategic Growth Dashboard</h1>
+      
+      <!-- Organization Selection -->
+      <div class="organization-selection">
+        <mat-form-field appearance="outline" class="org-dropdown">
+          <mat-label>Select Organization</mat-label>
+          <mat-select [(value)]="selectedOrganization" (selectionChange)="onOrganizationChange()">
+            <mat-option *ngFor="let org of organizations" [value]="org">
+              {{ org.name }} ({{ org.country }})
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      
       <h2 class="section-title">Add-on Target Analysis</h2>
       
       <div class="analysis-container">
@@ -105,7 +118,7 @@
           <div class="error-state" *ngIf="error && !loading">
             <mat-icon class="error-icon">error_outline</mat-icon>
             <p>{{ error }}</p>
-            <button mat-raised-button color="primary" (click)="loadPortfolioCompanies()">
+            <button mat-raised-button color="primary" (click)="loadOrganizations()">
               <mat-icon>refresh</mat-icon>
               Retry
             </button>
@@ -114,7 +127,7 @@
           <!-- Company List -->
           <div class="company-list" *ngIf="!loading && !error">
             <div class="company-item" *ngFor="let company of portfolioCompanies" (click)="onCompanyClick(company)">
-              <mat-icon class="company-icon">{{ company.icon }}</mat-icon>
+              <mat-icon class="company-icon">{{ company.icon || 'business' }}</mat-icon>
               <div class="company-info">
                 <span class="company-name">{{ company.name }}</span>
                 <span class="company-industry">{{ company.industry }}</span>

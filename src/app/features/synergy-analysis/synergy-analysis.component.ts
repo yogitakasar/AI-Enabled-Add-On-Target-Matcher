@@ -14,7 +14,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PortfolioApiService, AcquisitionTarget, PortfolioCompany } from '../../core/services/portfolio-api.service';
 
-
 @Component({
   selector: 'app-synergy-analysis',
   standalone: true,
@@ -49,53 +48,57 @@ export class SynergyAnalysisComponent implements OnInit {
     private portfolioApiService: PortfolioApiService
   ) {}
 
-  ngOnInit() {
-    // Use any navigation state for immediate display, but still fetch fresh data
-    const navigation = this.router.getCurrentNavigation();
-    if (navigation?.extras.state) {
-      const state = navigation.extras.state as any;
-      if (state.portfolioCompany && state.acquisitionTargets) {
-        console.log('Using data from navigation state:', state);
-        this.selectedCompany = state.portfolioCompany;
-        this.potentialAcquisitions = state.acquisitionTargets;
-      }
+  ngOnInit(): void {
+    // Get company ID from route parameters
+    const companyId = this.route.snapshot.paramMap.get('id');
+    const companyName = this.route.snapshot.queryParamMap.get('companyName');
+    
+    if (companyId) {
+      this.lastCompanyId = parseInt(companyId, 10);
+    }
+    
+    if (companyName) {
+      this.lastCompanyName = companyName;
     }
 
-    // Always fetch based on current route/query params and keep them updated
-    this.route.paramMap.subscribe(paramMap => {
-      const idStr = paramMap.get('id') || '1';
-      this.lastCompanyId = parseInt(idStr, 10);
-      const companyName = this.route.snapshot.queryParamMap.get('companyName') || this.selectedCompany?.name || 'OptiCore Solutions';
-      this.lastCompanyName = companyName;
-      console.log(`Fetching data for company ID: ${this.lastCompanyId}, Name: ${this.lastCompanyName}`);
-      this.loadCompanyData(this.lastCompanyId, this.lastCompanyName);
-    });
+    // Check if we have data from navigation state
+    const navigation = this.router.getCurrentNavigation();
+    if (navigation?.extras?.state) {
+      const state = navigation.extras.state as any;
+      this.selectedCompany = state.portfolioCompany;
+      this.potentialAcquisitions = state.acquisitionTargets || [];
+      console.log('Loaded data from navigation state:', { 
+        selectedCompany: this.selectedCompany, 
+        acquisitions: this.potentialAcquisitions 
+      });
+    } else {
+      // Fallback: load data from API
+      this.loadCompanyData();
+    }
   }
 
-  loadCompanyData(companyId: number, companyName: string): void {
+  loadCompanyData(): void {
     this.loading = true;
     this.error = null;
-
-    this.portfolioApiService.getPortfolioCompanyWithTargets(
-      companyId,
-      companyName
-    ).subscribe({
+    
+    this.portfolioApiService.getPortfolioCompanyWithTargets(this.lastCompanyId, this.lastCompanyName).subscribe({
       next: (response) => {
-        console.log('API response:', response);
-        this.loading = false;
-        
-        if (response.success && response.data) {
+        if (response.success) {
           this.selectedCompany = response.data.portfolioCompany;
           this.potentialAcquisitions = response.data.acquisitionTargets;
+          console.log('Company data loaded:', { 
+            selectedCompany: this.selectedCompany, 
+            acquisitions: this.potentialAcquisitions 
+          });
         } else {
           this.error = response.message || 'Failed to load company data';
-          console.error('API error:', response.message);
         }
+        this.loading = false;
       },
       error: (err) => {
-        console.error('Error fetching company data:', err);
-        this.loading = false;
+        console.error('Error loading company data:', err);
         this.error = 'Failed to load company data. Please try again.';
+        this.loading = false;
       }
     });
   }
@@ -104,50 +107,22 @@ export class SynergyAnalysisComponent implements OnInit {
     this.authService.logout();
   }
 
-  goBack(): void {
-    this.router.navigate(['/dashboard']);
-  }
-
   onAcquisitionClick(acquisition: AcquisitionTarget): void {
     console.log('Acquisition target clicked:', acquisition);
     
-    // Get the current portfolio company ID from the route
-    const portfolioCompanyId = this.route.snapshot.paramMap.get('id') || '1';
+    // Navigate directly to company analysis with the acquisition target data
+    // Since we already have all the data from the portfolio API response
+    const navigationState = { 
+      targetCompany: acquisition,
+      buyerCompanyId: this.selectedCompany?.companyId?.toString() || '1',
+      buyerCompanyName: this.selectedCompany?.name || 'Portfolio Company',
+      targetCompanyId: acquisition.companyId?.toString() || '1'
+    };
     
-    // Create target company ID (T1, T2, etc.)
-    const targetCompanyId = `${acquisition.id}`;
+    console.log('Navigation state being sent:', navigationState);
     
-    console.log(`Calling API: /portfolio?buyerCompanyId=${portfolioCompanyId}&targetCompanyId=${targetCompanyId}`);
-    
-    // Call the new API endpoint to get target company synergy details
-    this.portfolioApiService.getTargetCompanySynergies(portfolioCompanyId, targetCompanyId).subscribe({
-      next: (response) => {
-        console.log('Target company synergy API response:', response);
-                 if (response.success) {
-           // Navigate to company analysis with the synergy data
-           const navigationState = { 
-             targetCompany: response.data.targetCompany,
-             buyerCompanyId: response.data.buyerCompanyId,
-             buyerCompanyName: this.selectedCompany?.name || 'Portfolio Company',
-             targetCompanyId: response.data.targetCompanyId
-           };
-           
-           console.log('Navigation state being sent:', navigationState);
-           
-           this.router.navigate(['/company-analysis', acquisition.id], {
-             state: navigationState
-           });
-        } else {
-          console.error('Failed to load target company synergy data:', response.message);
-          // Fallback to old navigation
-          this.router.navigate(['/company-analysis', acquisition.id]);
-        }
-      },
-      error: (err) => {
-        console.error('Error loading target company synergy data:', err);
-        // Fallback to old navigation
-        this.router.navigate(['/company-analysis', acquisition.id]);
-      }
+    this.router.navigate(['/company-analysis', acquisition.companyId], {
+      state: navigationState
     });
   }
 }

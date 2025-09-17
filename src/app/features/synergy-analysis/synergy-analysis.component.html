@@ -100,7 +100,7 @@
         <mat-icon class="error-icon">error_outline</mat-icon>
         <h3>Error Loading Data</h3>
         <p>{{ error }}</p>
-        <button mat-raised-button color="primary" (click)="loadCompanyData(lastCompanyId, lastCompanyName)">Retry</button>
+        <button mat-raised-button color="primary" (click)="loadCompanyData()">Retry</button>
       </div>
       
       <!-- Content when data is loaded -->
@@ -161,7 +161,7 @@
                 <p class="acquisition-description">{{ acquisition.description }}</p>
               </div>
               <div class="acquisition-score">
-                <span class="score-badge">{{ acquisition.score }}</span>
+                <span class="score-badge">{{ acquisition.synergyScore }}</span>
               </div>
               <button mat-icon-button class="expand-btn">
                 <mat-icon>expand_more</mat-icon>

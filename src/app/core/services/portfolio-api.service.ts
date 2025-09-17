@@ -2,8 +2,20 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+// New Organization interface based on the API response
+export interface Organization {
+  organizationId: number;
+  orgExternalId: string;
+  name: string;
+  country: string;
+  headquarters: string;
+  industry: string;
+}
+
+// Updated PortfolioCompany interface to match new API response structure
 export interface PortfolioCompany {
-  id: number;
+  companyId: number;
+  companyExternalId: string;
   name: string;
   icon: string;
   industry: string;
@@ -14,43 +26,100 @@ export interface PortfolioCompany {
   headquarters: string;
   logo: string;
   synergyScore: number;
-  keyProducts: string[];
   sponsor: string;
   portfolioDuration: string;
-  addonHistory: string[];
+  sector: string;
+  subSector: string;
+  country: string;
+  website: string;
+  founderLed: boolean;
+  vcBacked: boolean;
+  keyProducts: KeyProduct[];
+  addonHistory: AddonHistory[];
+  buyerPairs: BuyerPair[];
+  targetPairs: any[];
+  portfolio: boolean;
 }
 
+export interface KeyProduct {
+  productId: number;
+  companyId: number;
+  productName: string;
+  description: string;
+}
+
+export interface AddonHistory {
+  addonId: number;
+  companyId: number;
+  addonName: string;
+  details: string;
+}
+
+export interface BuyerPair {
+  companyPairId: number;
+  externalPairId: string;
+  buyerCompanyId: number;
+  targetCompanyId: number;
+  synergyScore: number;
+  synergyRationale: string;
+  buyerAppetite: number;
+  targetReadiness: number | null;
+  sectorOverlap: string;
+  runId: string;
+  geo: GeoInfo[];
+  evidence: Evidence[];
+}
+
+export interface GeoInfo {
+  id: {
+    companyPairId: number;
+    countryCode: string;
+  };
+  countryCode: string;
+}
+
+export interface Evidence {
+  evidenceId: number;
+  source: string;
+  details: string;
+  createdUtc: string | null;
+}
+
+// New interface for portfolio response from /portfolio/all endpoint
+export interface PortfolioResponse {
+  portfolioCompany: PortfolioCompany;
+  acquisitionTargets: any;
+  buyers: any;
+}
+
+// Updated AcquisitionTarget interface to match new API response structure
+// This is the same as PortfolioCompany since acquisition targets have the same structure
 export interface AcquisitionTarget {
-  id: number;
+  companyId: number;
+  companyExternalId: string;
   name: string;
-  description: string;
-  score: number;
-  industry: string;
-  revenue: string;
-  ebitda: string;
-  employees: number;
-  headquarters: string;
-  synergyScore: number;
-  keyProducts: string[];
-}
-
-export interface TargetCompanySynergy {
-  companyName: string;
-  name: string; // Add this for template compatibility
+  icon: string;
   industry: string;
   description: string;
   revenue: string;
   ebitda: string;
   employees: number;
   headquarters: string;
+  logo: string;
   synergyScore: number;
-  keyProducts: string[];
-  synergies: SynergyDetail[];
-  financialMetrics: FinancialMetrics;
-  risks: string[];
-  sponsor: string; // Add this for template compatibility
-  portfolioDuration: string; // Add this for template compatibility
-  addonHistory: string[]; // Add this for template compatibility
+  sponsor: string;
+  portfolioDuration: string;
+  sector: string;
+  subSector: string;
+  country: string;
+  website: string;
+  founderLed: boolean;
+  vcBacked: boolean;
+  keyProducts: KeyProduct[];
+  addonHistory: AddonHistory[];
+  buyerPairs: BuyerPair[];
+  targetPairs: any[];
+  portfolio: boolean;
 }
 
 export interface SynergyDetail {
@@ -74,35 +143,45 @@ export interface ApiResponse<T> {
   message: string;
 }
 
+// Updated PortfolioCompanyResponse interface to match the new API response structure
 export interface PortfolioCompanyResponse {
   portfolioCompany: PortfolioCompany;
   acquisitionTargets: AcquisitionTarget[];
-}
-
-
-export interface TargetCompanyResponse {
-  targetCompany: TargetCompanySynergy;
-  buyerCompanyId: string;
-  targetCompanyId: string;
+  buyers: any[];
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class PortfolioApiService {
-  private readonly baseUrl = 'https://vantagesourcing.purplebay-2788e3f9.eastus.azurecontainerapps.io/portfolio';
+  private readonly baseUrl = 'https://vantagesourcing.kindwater-5fa69381.eastus.azurecontainerapps.io';
+  private readonly portfolioUrl = 'https://vantagesourcing.purplebay-2788e3f9.eastus.azurecontainerapps.io/portfolio';
 
   constructor(private http: HttpClient) {}
 
   /**
-   * Get all portfolio companies
+   * Get all organizations
    */
-  getAllPortfolioCompanies(): Observable<ApiResponse<PortfolioCompany[]>> {
-    return this.http.get<ApiResponse<PortfolioCompany[]>>(`${this.baseUrl}/all`);
+  getAllOrganizations(): Observable<ApiResponse<Organization[]>> {
+    return this.http.get<ApiResponse<Organization[]>>(`${this.baseUrl}/api/dashboard/getAllOrg`);
   }
 
   /**
-   * Get portfolio company details and acquisition targets
+   * Get portfolio companies by organization ID
+   */
+  getPortfolioCompaniesByOrgId(orgId: number): Observable<ApiResponse<PortfolioResponse[]>> {
+    return this.http.get<ApiResponse<PortfolioResponse[]>>(`${this.baseUrl}/portfolio/all?orgId=${orgId}`);
+  }
+
+  /**
+   * Get all portfolio companies (legacy method - keeping for backward compatibility)
+   */
+  getAllPortfolioCompanies(): Observable<ApiResponse<PortfolioCompany[]>> {
+    return this.http.get<ApiResponse<PortfolioCompany[]>>(`${this.portfolioUrl}/all`);
+  }
+
+  /**
+   * Get portfolio company details and acquisition targets - Updated to use new endpoint
    */
   getPortfolioCompanyWithTargets(
     companyId: number, 
@@ -114,36 +193,20 @@ export class PortfolioApiService {
     };
     
     const queryString = new URLSearchParams(params).toString();
-    return this.http.get<ApiResponse<PortfolioCompanyResponse>>(`${this.baseUrl}?${queryString}`);
-  }
-
-  /**
-   * Get target company synergy details
-   */
-  getTargetCompanySynergies(
-    buyerCompanyId: string, 
-    targetCompanyId: string
-  ): Observable<ApiResponse<TargetCompanyResponse>> {
-    const params = {
-      buyerCompanyId: buyerCompanyId,
-      targetCompanyId: targetCompanyId
-    };
-    
-    const queryString = new URLSearchParams(params).toString();
-    return this.http.get<ApiResponse<TargetCompanyResponse>>(`${this.baseUrl}/target?${queryString}`);
+    return this.http.get<ApiResponse<PortfolioCompanyResponse>>(`${this.baseUrl}/portfolio?${queryString}`);
   }
 
   /**
    * Search portfolio companies
    */
   searchPortfolioCompanies(query: string): Observable<ApiResponse<PortfolioCompany[]>> {
-    return this.http.get<ApiResponse<PortfolioCompany[]>>(`${this.baseUrl}/search?q=${encodeURIComponent(query)}`);
+    return this.http.get<ApiResponse<PortfolioCompany[]>>(`${this.portfolioUrl}/search?q=${encodeURIComponent(query)}`);
   }
 
   /**
    * Get portfolio companies by industry
    */
   getPortfolioCompaniesByIndustry(industry: string): Observable<ApiResponse<PortfolioCompany[]>> {
-    return this.http.get<ApiResponse<PortfolioCompany[]>>(`${this.baseUrl}/industry/${encodeURIComponent(industry)}`);
+    return this.http.get<ApiResponse<PortfolioCompany[]>>(`${this.portfolioUrl}/industry/${encodeURIComponent(industry)}`);
   }
 }
