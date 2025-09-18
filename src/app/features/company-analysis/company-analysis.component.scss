@@ -542,3 +542,34 @@
     }
   }
 }
+
+// ... existing code ...
+
+.acquisition-targets {
+  margin-top: 20px;
+
+  .target-item {
+    margin-bottom: 16px;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+
+    .target-name {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .target-synergy {
+      color: var(--primary-color);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .target-desc {
+      font-size: 14px;
+      color: #666;
+    }
+  }
+}
+
+// ... existing code ...

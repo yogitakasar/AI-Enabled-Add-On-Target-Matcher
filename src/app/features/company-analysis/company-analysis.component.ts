@@ -52,58 +52,64 @@ export class CompanyAnalysisComponent implements OnInit {
     timeline?: string;
     value?: string;
     examples: string[];
-  }> = [
-    {
-      title: 'Cost Synergy',
-      icon: 'attach_money',
-      description: 'Reduction in operational expenses through economies of scale, shared services, or optimized procurement.',
-      examples: [
-        'Consolidated IT infrastructure for 15% savings.',
-        'Bulk purchasing agreements for raw materials.',
-        'Streamlined administrative functions.'
-      ]
-    },
-    {
-      title: 'Revenue Synergy',
-      icon: 'trending_up',
-      description: 'Increase in revenue through cross-selling, market expansion, or new product development leveraging combined strengths.',
-      examples: [
-        'Cross-selling products to existing customer bases.',
-        'Entry into new geographic markets.',
-        'Development of hybrid product offerings.'
-      ]
-    },
-    {
-      title: 'Sector Expansion',
-      icon: 'public',
-      description: 'Diversification and strengthening of portfolio in new or adjacent sectors, reducing market concentration risk.',
-      examples: [
-        'Acquisition providing access to emerging technologies.',
-        'Strategic entry into high-growth healthcare sub-sectors.',
-        'Cross-sector technology transfer opportunities.'
-      ]
-    },
-    {
-      title: 'Technology Integration',
-      icon: 'psychology',
-      description: 'Leveraging combined technological capabilities to create innovative solutions and improve operational efficiency.',
-      examples: [
-        'Integration of AI/ML capabilities across portfolio.',
-        'Shared cloud infrastructure and data platforms.',
-        'Unified customer experience platforms.'
-      ]
-    },
-    {
-      title: 'Operational Efficiency',
-      icon: 'speed',
-      description: 'Streamlining operations and reducing redundancies through shared resources and best practices.',
-      examples: [
-        'Centralized back-office functions.',
-        'Shared manufacturing facilities.',
-        'Unified supply chain management.'
-      ]
-    }
-  ];
+    synergyScore?: number;
+    synergyRationale?: string;}>=[]
+  // }> = [
+  //   {
+  //     title: 'Cost Synergy',
+  //     icon: 'attach_money',
+  //     description: 'Reduction in operational expenses through economies of scale, shared services, or optimized procurement.',
+  //     examples: [
+  //       'Consolidated IT infrastructure for 15% savings.',
+  //       'Bulk purchasing agreements for raw materials.',
+  //       'Streamlined administrative functions.'
+  //     ]
+  //   },
+  //   {
+  //     title: 'Revenue Synergy',
+  //     icon: 'trending_up',
+  //     description: 'Increase in revenue through cross-selling, market expansion, or new product development leveraging combined strengths.',
+  //     examples: [
+  //       'Cross-selling products to existing customer bases.',
+  //       'Entry into new geographic markets.',
+  //       'Development of hybrid product offerings.'
+  //     ]
+  //   },
+  //   {
+  //     title: 'Sector Expansion',
+  //     icon: 'public',
+  //     description: 'Diversification and strengthening of portfolio in new or adjacent sectors, reducing market concentration risk.',
+  //     examples: [
+  //       'Acquisition providing access to emerging technologies.',
+  //       'Strategic entry into high-growth healthcare sub-sectors.',
+  //       'Cross-sector technology transfer opportunities.'
+  //     ]
+  //   },
+  //   {
+  //     title: 'Technology Integration',
+  //     icon: 'psychology',
+  //     description: 'Leveraging combined technological capabilities to create innovative solutions and improve operational efficiency.',
+  //     examples: [
+  //       'Integration of AI/ML capabilities across portfolio.',
+  //       'Shared cloud infrastructure and data platforms.',
+  //       'Unified customer experience platforms.'
+  //     ]
+  //   },
+  //   {
+  //     title: 'Operational Efficiency',
+  //     icon: 'speed',
+  //     description: 'Streamlining operations and reducing redundancies through shared resources and best practices.',
+  //     examples: [
+  //       'Centralized back-office functions.',
+  //       'Shared manufacturing facilities.',
+  //       'Unified supply chain management.'
+  //     ]
+  //   }
+  // ];
+
+  portfolioData: any;
+  buyers: AcquisitionTarget[] = [];
+  acquisitionTargets: AcquisitionTarget[] = [];
 
   constructor(
     public authService: AuthService,
@@ -127,117 +133,88 @@ export class CompanyAnalysisComponent implements OnInit {
       this.buyerCompanyName = state.buyerCompanyName || 'Portfolio Company';
       this.targetCompanyName = state.targetCompany?.name || 'Target Company';
       
+      // Load portfolio data if available
+      if (state.portfolioData) {
+        this.portfolioData = state.portfolioData;
+        this.processPortfolioData();
+      }
+      
       console.log('Loaded data from navigation state:', {
         selectedCompany: this.selectedCompany,
         buyerCompanyName: this.buyerCompanyName,
-        targetCompanyName: this.targetCompanyName
+        targetCompanyName: this.targetCompanyName,
+        portfolioData: this.portfolioData
       });
       
       this.loading = false;
     } else {
-      // Fallback: load mock data
-      this.loadMockData();
+      // No data available - show error
+      this.error = 'No company data available. Please navigate from the dashboard.';
+      this.loading = false;
     }
   }
 
-  private loadMockData(): void {
-    // Mock data for demonstration
-    this.selectedCompany = {
-      companyId: 1,
-      companyExternalId: 'c0001',
-      name: 'Acme Data Labs',
-      icon: 'business',
-      industry: 'Data & AI Platform',
-      description: 'AI-driven analytics platform',
-      revenue: '$200M',
-      ebitda: '$50M',
-      employees: 600,
-      headquarters: 'Boston, MA',
-      logo: '🏢',
-      synergyScore: 7.5,
-      sponsor: 'TechVentures Capital',
-      portfolioDuration: '3 years',
-      sector: 'Data & AI',
-      subSector: 'Analytics',
-      country: 'US',
-      website: 'https://acme.com',
-      founderLed: true,
-      vcBacked: true,
-      keyProducts: [],
-      addonHistory: [],
-      buyerPairs: [],
-      targetPairs: [],
-      portfolio: true
-    };
+  private processPortfolioData(): void {
+    if (!this.portfolioData) return;
+
+    this.buyers = this.portfolioData.buyers || [];
+    this.acquisitionTargets = this.portfolioData.acquisitionTargets || [];
     
-    this.buyerCompanyName = 'Portfolio Company';
-    this.targetCompanyName = this.selectedCompany.name;
-    this.loading = false;
+    // Update acquisition targets with synergy data from targetPairs
+    this.acquisitionTargets.forEach(target => {
+      if (target.targetPairs && target.targetPairs.length > 0) {
+        // Find matching targetPair where targetCompanyId matches the target's companyId
+        const matchingPair = target.targetPairs.find(pair => 
+          pair.targetCompanyId === target.companyId
+        );
+        
+        if (matchingPair) {
+          // Add synergy data to the target
+          target.synergyScore = matchingPair.synergyScore;
+          target.description = matchingPair.synergyRationale;
+        }
+      }
+    });
+
+    // Update buyers with synergy data from buyerPairs
+    this.buyers.forEach(buyer => {
+      if (buyer.buyerPairs && buyer.buyerPairs.length > 0) {
+        // Find matching buyerPair where buyerCompanyId matches the buyer's companyId
+        const matchingPair = buyer.buyerPairs.find(pair => 
+          pair.buyerCompanyId === buyer.companyId
+        );
+        
+        if (matchingPair) {
+          // Add synergy data to the buyer
+          buyer.synergyScore = matchingPair.synergyScore;
+          buyer.description = matchingPair.synergyRationale;
+        }
+      }
+    });
+  }
+
+
+
+ 
+
+  private getImpactFromScore(score: number): string {
+    if (score >= 80) return 'High';
+    if (score >= 60) return 'Medium';
+    return 'Low';
+  }
+
+  getBuyerSynergyScore(buyer: AcquisitionTarget): number {
+    if (!this.selectedCompany || !buyer.buyerPairs) return 0;
+    
+    // Find the synergy score for this buyer-target pair
+    const matchingPair = buyer.buyerPairs.find(pair => 
+      pair.targetCompanyId === this.selectedCompany?.companyId
+    );
+    
+    return matchingPair?.synergyScore || 0;
   }
 
   logout(): void {
     this.authService.logout();
-  }
-
-  private updateSynergyTypesWithRealData(targetCompany: AcquisitionTarget): void {
-    // Since AcquisitionTarget doesn't have synergies property, we'll use the existing synergy types
-    // The synergy types are already defined in the component, so we don't need to update them
-    console.log('Using existing synergy types for company:', targetCompany.name);
-  }
-
-  private getSynergyIcon(synergyType: string): string {
-    const iconMap: { [key: string]: string } = {
-      'Product Integration': 'integration_instructions',
-      'Market Expansion': 'public',
-      'Technology Synergy': 'psychology',
-      'Operational Efficiency': 'speed',
-      'AI Enhancement': 'smart_toy',
-      'User Experience': 'person',
-      'Security Enhancement': 'security',
-      'Compliance': 'verified',
-      'Integration Capability': 'hub',
-      'Developer Experience': 'code'
-    };
-    return iconMap[synergyType] || 'star';
-  }
-
-  private getCompanyData(companyId: string): any {
-    const companies: { [key: string]: any } = {
-      '1': {
-        name: 'Acme Data Labs',
-        industry: 'Data & AI Platform',
-        description: 'AI-driven analytics platform',
-        revenue: '$200M',
-        ebitda: '$50M',
-        employees: 600,
-        headquarters: 'Boston, MA',
-        synergyScore: 7.5,
-        keyProducts: [
-          'Acme Insight Engine',
-          'Acme CloudHub'
-        ],
-        addonHistory: [
-          'Acquired DataStream Corp'
-        ]
-      },
-      '2': {
-        name: 'Nimbus Analytics',
-        industry: 'Data & AI Platform',
-        description: 'Cloud-native BI software',
-        revenue: '$125M',
-        ebitda: '$38M',
-        employees: 450,
-        headquarters: 'Bangalore, India',
-        synergyScore: 8.0,
-        keyProducts: [
-          'Nimbus BI Pro',
-          'Nimbus Lite'
-        ],
-        addonHistory: [
-          'Merged with CloudViz'
-        ]
-      }
-    };
-    return companies[companyId] || companies['1'];
   }
 }

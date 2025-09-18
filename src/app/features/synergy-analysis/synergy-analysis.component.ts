@@ -36,10 +36,14 @@ import { PortfolioApiService, AcquisitionTarget, PortfolioCompany } from '../../
 export class SynergyAnalysisComponent implements OnInit {
   selectedCompany: PortfolioCompany | null = null;
   potentialAcquisitions: AcquisitionTarget[] = [];
+  buyers: AcquisitionTarget[] = [];
   loading = false;
   error: string | null = null;
   lastCompanyId: number = 1;
   lastCompanyName: string = 'OptiCore Solutions';
+  
+  // Add minimal expand tracking
+  expandedItems: Set<string> = new Set();
 
   constructor(
     public authService: AuthService,
@@ -86,6 +90,36 @@ export class SynergyAnalysisComponent implements OnInit {
         if (response.success) {
           this.selectedCompany = response.data.portfolioCompany;
           this.potentialAcquisitions = response.data.acquisitionTargets;
+          this.buyers = response.data.buyers || [];
+
+           this.potentialAcquisitions.forEach(target => {
+          if (target.targetPairs && target.targetPairs.length > 0) {
+            // Find matching targetPair where targetCompanyId matches the target's companyId
+            const matchingPair = target.targetPairs.find(pair => 
+              pair.targetCompanyId === target.companyId
+            );
+            
+            if (matchingPair) {
+              // Add synergy data to the target
+              target.synergyScore = matchingPair.synergyScore;
+              target.description = matchingPair.synergyRationale;
+            }
+          }
+        });
+         this.buyers.forEach(target => {
+          if (target.buyerPairs && target.buyerPairs.length > 0) {
+            // Find matching targetPair where targetCompanyId matches the target's companyId
+            const matchingPair = target.buyerPairs.find(pair => 
+              pair.buyerCompanyId === target.companyId
+            );
+            
+            if (matchingPair) {
+              // Add synergy data to the target
+              target.synergyScore = matchingPair.synergyScore;
+              target.description = matchingPair.synergyRationale;
+            }
+          }
+        });
           console.log('Company data loaded:', { 
             selectedCompany: this.selectedCompany, 
             acquisitions: this.potentialAcquisitions 
@@ -124,5 +158,17 @@ export class SynergyAnalysisComponent implements OnInit {
     this.router.navigate(['/company-analysis', acquisition.companyId], {
       state: navigationState
     });
+  }
+
+  toggleExpansion(itemId: string): void {
+    if (this.expandedItems.has(itemId)) {
+      this.expandedItems.delete(itemId);
+    } else {
+      this.expandedItems.add(itemId);
+    }
+  }
+
+  isExpanded(itemId: string): boolean {
+    return this.expandedItems.has(itemId);
   }
 }

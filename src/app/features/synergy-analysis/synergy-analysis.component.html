@@ -151,21 +151,51 @@
           </div>
         </div>
         
-        <!-- Right Panel - Potential Acquisitions -->
-        <div class="acquisitions-panel">
-          <h3 class="panel-title">Potential Acquisitions (Add-ons)</h3>
-          <div class="acquisitions-list">
-            <div class="acquisition-item" *ngFor="let acquisition of potentialAcquisitions" (click)="onAcquisitionClick(acquisition)">
-              <div class="acquisition-content">
-                <h4 class="acquisition-name">{{ acquisition.name }}</h4>
-                <p class="acquisition-description">{{ acquisition.description }}</p>
+        <!-- Right Panel - Potential Acquisitions and Buyers -->
+        <div class="right-panel">
+          <!-- Potential Acquisitions -->
+          <div class="acquisitions-panel" *ngIf="potentialAcquisitions && potentialAcquisitions.length > 0">
+            <h3 class="panel-title">Potential Acquisitions (Add-ons)</h3>
+            <div class="acquisitions-list">
+              <div class="acquisition-item" *ngFor="let acquisition of potentialAcquisitions">
+                <div class="acquisition-content">
+                  <h4 class="acquisition-name">{{ acquisition.name }}</h4>
+                  <p class="acquisition-description" 
+                     [class.expanded]="isExpanded('acq-' + acquisition.companyId)">
+                    {{ isExpanded('acq-' + acquisition.companyId) ? acquisition.description : (acquisition.description | slice:0:100) + '...' }}
+                  </p>
+                </div>
+                <div class="acquisition-score">
+                  <span class="score-badge">{{ acquisition.synergyScore }}</span>
+                </div>
+                <button mat-icon-button class="expand-btn" 
+                        (click)="toggleExpansion('acq-' + acquisition.companyId)">
+                  <mat-icon>{{ isExpanded('acq-' + acquisition.companyId) ? 'expand_less' : 'expand_more' }}</mat-icon>
+                </button>
               </div>
-              <div class="acquisition-score">
-                <span class="score-badge">{{ acquisition.synergyScore }}</span>
+            </div>
+          </div>
+          
+          <!-- Potential Buyers -->
+          <div class="buyers-panel" *ngIf="buyers && buyers.length > 0">
+            <h3 class="panel-title">Potential Buyers</h3>
+            <div class="buyers-list">
+              <div class="buyer-item" *ngFor="let buyer of buyers">
+                <div class="buyer-content">
+                  <h4 class="buyer-name">{{ buyer.name }}</h4>
+                  <p class="buyer-description" 
+                     [class.expanded]="isExpanded('buyer-' + buyer.companyId)">
+                    {{ isExpanded('buyer-' + buyer.companyId) ? buyer.description : (buyer.description | slice:0:100) + '...' }}
+                  </p>
+                </div>
+                <div class="buyer-score">
+                  <span class="score-badge">{{ buyer.synergyScore }}</span>
+                </div>
+                <button mat-icon-button class="expand-btn" 
+                        (click)="toggleExpansion('buyer-' + buyer.companyId)">
+                  <mat-icon>{{ isExpanded('buyer-' + buyer.companyId) ? 'expand_less' : 'expand_more' }}</mat-icon>
+                </button>
               </div>
-              <button mat-icon-button class="expand-btn">
-                <mat-icon>expand_more</mat-icon>
-              </button>
             </div>
           </div>
         </div>

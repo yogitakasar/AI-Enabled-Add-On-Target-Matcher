@@ -155,6 +155,16 @@
               <p>{{ selectedCompany?.description || 'No description available.' }}</p>
             </div>
             
+            <!-- Acquisition Targets -->
+            <div class="acquisition-targets" *ngIf="acquisitionTargets && acquisitionTargets.length > 0">
+              <h4>Acquisition Targets</h4>
+              <div class="target-item" *ngFor="let target of acquisitionTargets">
+                <div class="target-name">{{ target.name }}</div>
+                <div class="target-synergy" *ngIf="target.synergyScore">Synergy Score: {{ target.synergyScore }}</div>
+                <div class="target-desc" *ngIf="target.description">{{ target.description }}</div>
+              </div>
+            </div>
+            
             <!-- <div class="key-products" *ngIf="selectedCompany?.keyProducts && selectedCompany.keyProducts.length > 0">
               <h4>Key Products</h4>
               <div class="product-list">
@@ -166,9 +176,57 @@
             </div> -->
           </div>
           
+          <!-- Acquisition Targets Section -->
+          <div class="acquisition-targets-panel" *ngIf="acquisitionTargets && acquisitionTargets.length > 0">
+            <h3 class="panel-title">Acquisition Targets</h3>
+            
+            <div class="targets-list">
+              <div class="target-item" *ngFor="let target of acquisitionTargets">
+                <div class="target-header">
+                  <div class="target-info">
+                    <h4 class="target-name">{{ target.name }}</h4>
+                    <span class="target-industry">{{ target.industry }}</span>
+                  </div>
+                  <div class="target-synergy-score" *ngIf="target.synergyScore">
+                    <span class="score-label">Synergy Score</span>
+                    <span class="score-value">{{ target.synergyScore }}</span>
+                  </div>
+                </div>
+                <div class="target-description" *ngIf="target.description">
+                  <h5>Synergy Rationale:</h5>
+                  <p>{{ target.description }}</p>
+                </div>
+                <div class="target-details">
+                  <div class="detail-item">
+                    <span class="detail-label">Revenue:</span>
+                    <span class="detail-value">{{ target.revenue || 'N/A' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Employees:</span>
+                    <span class="detail-value">{{ target.employees || 'N/A' }}</span>
+                  </div>
+                  <div class="detail-item">
+                    <span class="detail-label">Location:</span>
+                    <span class="detail-value">{{ target.headquarters || 'N/A' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
           <!-- Right Panel - Synergy Analysis -->
           <div class="synergy-analysis-panel">
             <h3 class="panel-title">Synergy Analysis</h3>
+            
+            <!-- Buyers Section -->
+            <div class="buyers-section" *ngIf="buyers && buyers.length > 0">
+              <h4>Potential Buyers</h4>
+              <div class="buyer-item" *ngFor="let buyer of buyers">
+                <div class="buyer-name">{{ buyer.name }}</div>
+                <div class="buyer-synergy" *ngIf="buyer.synergyScore">Synergy Score: {{ buyer.synergyScore }}</div>
+                <div class="buyer-desc" *ngIf="buyer.description">{{ buyer.description }}</div>
+              </div>
+            </div>
             
             <div class="synergy-types">
               <div class="synergy-type" *ngFor="let synergy of synergyTypes">
@@ -178,12 +236,16 @@
                     <h4 class="synergy-title">{{ synergy.title }}</h4>
                     <span class="synergy-impact impact-{{ (synergy.impact || 'medium').toLowerCase() }}">{{ synergy.impact || 'Medium' }}</span>
                   </div>
-                  <div class="synergy-value">{{ synergy.value }}</div>
+                  <div class="synergy-value">{{ synergy.value || 'TBD' }}</div>
                 </div>
-                <p class="synergy-description">{{ synergy.description }}</p>
-                <div class="synergy-timeline">
+                <p class="synergy-description">{{ synergy.synergyRationale || synergy.description }}</p>
+                <div class="synergy-timeline" *ngIf="synergy.timeline">
                   <mat-icon>schedule</mat-icon>
                   <span>{{ synergy.timeline }}</span>
+                </div>
+                <div class="synergy-score" *ngIf="synergy.synergyScore">
+                  <mat-icon>trending_up</mat-icon>
+                  <span>Synergy Score: {{ synergy.synergyScore }}</span>
                 </div>
                 <div class="synergy-examples">
                   <h5>Examples:</h5>
